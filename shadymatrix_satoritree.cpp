@@ -12,6 +12,7 @@
 
 int count_LEDs_in_cross_matrix(int, int);
 void init_pattern();
+void proceed_pattern(float time);
 LED shader(float time, vec2 coord, int pixel, int segment);
 
 const float distance_LED_in_cm = 100. / 60.;
@@ -404,7 +405,9 @@ int main(int argc, char* argv[])
         {
             SDL_Delay(5);
         }
+
         time++;
+        proceed_pattern(time);
     }
 
     SDL_DestroyRenderer(renderer);
@@ -423,14 +426,15 @@ int counter_max[3];
 
 #define globalHue 224
 #define WATER_HUE globalHue
-#define WATER_SCALE 10
-#define WATER_SPEED .1
+#define WATER_SCALE .5
+#define WATER_SPEED .008
 #define WATER_SPEED_RND 0.42
-#define WATER_PERIOD_MIN 27
-#define WATER_PERIOD_RND 8
-#define WATER_BG 0.3
-#define WATER_WHITE_MAX 0.5
+#define WATER_PERIOD_MIN 64
+#define WATER_PERIOD_RND 16
+#define WATER_BG 0.7
+#define WATER_WHITE_MAX 1
 #define WATER_WHITE_EXPONENT 2.6
+#define WATER_Y_OFFSET 0.47
 
 void init_pattern()
 {
@@ -452,6 +456,27 @@ void init_pattern()
     counter[2] = -WATER_PERIOD_MIN * 2 / 3;
 }
 
+void proceed_pattern(float time)
+{
+    for(int p=0; p<3; p++)
+    {
+        if (counter[p] < counter_max[p])
+        {
+            pos[p] = WATER_SPEED * counter[p];
+            counter[p]++;
+        }
+        if (counter[p] == counter_max[p])
+        {
+            lumi[p] = WATER_BG + (1 - WATER_BG) * 0.01 * random(100);
+            white[p] = WATER_WHITE_MAX * pow(0.01 * random(100), WATER_WHITE_EXPONENT);
+            counter_max[p] = WATER_PERIOD_MIN + random(WATER_PERIOD_RND);
+            counter[p] = 0;
+        }
+    }
+    printf("STEP %f %i %i %f\n", pos[0], counter[0], counter_max[0], white[0]);
+
+}
+
 LED shader(float time, vec2 coord, int pixel, int segment)
 {
     if (debug)
@@ -463,35 +488,24 @@ LED shader(float time, vec2 coord, int pixel, int segment)
         return LED(200, .5, 1);
     }
 
-    if (counter[0] < counter_max[0])
+    if (segment > 5) // leaves
     {
-        pos[0] = WATER_SPEED * counter[0];
-        counter[0]++;
+        LED led = LED(100, 0, .8);
+        return led;
     }
-    if (counter[0] == counter_max[0])
+    else // tie
     {
-        lumi[0] = WATER_BG + (1 - WATER_BG) * 0.01 * random(100);
-        white[0] = WATER_WHITE_MAX * pow(0.01 * random(100), WATER_WHITE_EXPONENT);
-        counter_max[0] = WATER_PERIOD_MIN + random(WATER_PERIOD_RND);
-        counter[0] = 0;
-    }
+        LED led = LED(WATER_HUE, 0, WATER_BG);
 
-    LED led = LED(WATER_HUE, 0, WATER_BG);
+        for(int p=0; p<3; p++)
+        {
+            float ypos = (float)(pos[p] - coord.y + WATER_Y_OFFSET);
+            if (ypos >= 0)
+            {
+                led.mix(LED(WATER_HUE, white[p], lumi[p] * max(0., (1 - ypos / WATER_SCALE))), 1);
+            }
+        }
 
-    printf("pix %i %i %i %i %f\n", pixel, pos[0], counter[0], counter_max[0], WATER_SPEED);
-
-    if (coord.y <= pos[0])
-    {
-        led.mix(LED(WATER_HUE, white[0], lumi[0] * max(0., (1 - (float)(pos[0] - coord.y) / WATER_SCALE))), 1);
+        return led;
     }
-    if (coord.y <= pos[1])
-    {
-        led.mix(LED(WATER_HUE, white[1], lumi[1] * max(0., (1 - (float)(pos[1] - coord.y) / WATER_SCALE))), 1);
-    }
-    if (coord.y <= pos[2])
-    {
-        led.mix(LED(WATER_HUE, white[2], lumi[2] * max(0., (1 - (float)(pos[2] - coord.y) / WATER_SCALE))), 1);
-    }
-
-    return led;
 }
