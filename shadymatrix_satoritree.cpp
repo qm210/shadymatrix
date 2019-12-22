@@ -66,6 +66,11 @@ struct Segment
     {
         pixels = max(pixels + inc, 1);
     }
+    void flip()
+    {
+        set_origin(get_last_pixel().x, get_last_pixel().y);
+        set_direction(direction + 180.);
+    }
 };
 
 int main(int argc, char* argv[])
@@ -84,10 +89,13 @@ int main(int argc, char* argv[])
     float height = 32;
     float margin = 0;
     bool circleShape = true;
-    bool helperLines = false;
+    bool helperLines = true;
     bool blurLights = true;
     bool drawStripRectangle = true;
     float stripWidth = 1.0;
+
+    float originOffsetX = 16;
+    float originOffsetY = 16;
 
     int selected_segment = 0;
 
@@ -265,22 +273,25 @@ int main(int argc, char* argv[])
                         case SDLK_f:
                             segments[selected_segment].change_length(-1);
                             break;
+                        case SDLK_t:
+                            segments[selected_segment].flip();
+                            break;
 
                         case SDLK_UP:
                             selected_segment = (selected_segment + 1) % segments.size();
                             printf("selected segment %i \t %i pixels \t\t (%.2f, %.2f)  (%.2f, %.2f) \t\t ANTI [ (%.2f, %.2f)  (%.2f, %.2f) ] \n", selected_segment, segments[selected_segment].pixels,
-                                                                segments[selected_segment].origin_x, segments[selected_segment].origin_y,
-                                                                segments[selected_segment].get_last_pixel().x, segments[selected_segment].get_last_pixel().y,
-                                                                width - segments[selected_segment].origin_x, height - segments[selected_segment].origin_y,
-                                                                width - segments[selected_segment].get_last_pixel().x, height - segments[selected_segment].get_last_pixel().y);
+                                                                segments[selected_segment].origin_x - originOffsetX, segments[selected_segment].origin_y - originOffsetY,
+                                                                segments[selected_segment].get_last_pixel().x - originOffsetX, segments[selected_segment].get_last_pixel().y - originOffsetY,
+                                                                width - segments[selected_segment].origin_x - originOffsetX, height - segments[selected_segment].origin_y - originOffsetY,
+                                                                width - segments[selected_segment].get_last_pixel().x - originOffsetX, height - segments[selected_segment].get_last_pixel().y - originOffsetY);
                             break;
                         case SDLK_DOWN:
                             selected_segment = (selected_segment - 1 + segments.size()) % segments.size();
                             printf("selected segment %i \t %i pixels \t\t (%.2f, %.2f)  (%.2f, %.2f) \t\t ANTI [ (%.2f, %.2f)  (%.2f, %.2f) ] \n", selected_segment, segments[selected_segment].pixels,
-                                                                segments[selected_segment].origin_x, segments[selected_segment].origin_y,
-                                                                segments[selected_segment].get_last_pixel().x, segments[selected_segment].get_last_pixel().y,
-                                                                width - segments[selected_segment].origin_x, height - segments[selected_segment].origin_y,
-                                                                width - segments[selected_segment].get_last_pixel().x, height - segments[selected_segment].get_last_pixel().y);
+                                                                segments[selected_segment].origin_x - originOffsetX, segments[selected_segment].origin_y - originOffsetY,
+                                                                segments[selected_segment].get_last_pixel().x - originOffsetX, segments[selected_segment].get_last_pixel().y - originOffsetY,
+                                                                width - segments[selected_segment].origin_x - originOffsetX, height - segments[selected_segment].origin_y - originOffsetY,
+                                                                width - segments[selected_segment].get_last_pixel().x - originOffsetX, height - segments[selected_segment].get_last_pixel().y - originOffsetY);
                             break;
 
                         case SDLK_ESCAPE:
@@ -394,10 +405,11 @@ int main(int argc, char* argv[])
             SDL_RenderDrawLine(renderer, SCALE * corner2x, SCALE * corner2y - 1, SCALE * corner3x, SCALE * corner3y - 1);
             SDL_RenderDrawLine(renderer, SCALE * corner3x, SCALE * corner3y - 1, SCALE * corner4x, SCALE * corner4y - 1);
             SDL_RenderDrawLine(renderer, SCALE * corner4x, SCALE * corner4y - 1, SCALE * corner1x, SCALE * corner1y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner1x + 1, SCALE * corner1y, SCALE * corner2x + 1, SCALE * corner2y);
+            //SDL_RenderDrawLine(renderer, SCALE * corner1x + 1, SCALE * corner1y, SCALE * corner2x + 1, SCALE * corner2y);
             SDL_RenderDrawLine(renderer, SCALE * corner2x + 1, SCALE * corner2y, SCALE * corner3x + 1, SCALE * corner3y);
             SDL_RenderDrawLine(renderer, SCALE * corner3x + 1, SCALE * corner3y, SCALE * corner4x + 1, SCALE * corner4y);
             SDL_RenderDrawLine(renderer, SCALE * corner4x + 1, SCALE * corner4y, SCALE * corner1x + 1, SCALE * corner1y);
+            SDL_RenderDrawLine(renderer, SCALE * corner3x - 1, SCALE * corner3y + 1, SCALE * corner4x - 1, SCALE * corner4y + 1);
         }
 
         SDL_RenderPresent(renderer);
@@ -473,8 +485,7 @@ void proceed_pattern(float time)
             counter[p] = 0;
         }
     }
-    printf("STEP %f %i %i %f\n", pos[0], counter[0], counter_max[0], white[0]);
-
+    // printf("STEP %f %i %i %f\n", pos[0], counter[0], counter_max[0], white[0]);
 }
 
 LED shader(float time, vec2 coord, int pixel, int segment)
