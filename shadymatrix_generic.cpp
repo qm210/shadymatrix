@@ -44,9 +44,9 @@ struct Segment
             origin_y - i * distance_LED_in_cm * sin(direction * PI/180.)
         );
     }
-    vec2 get_last_pixel() {return get_pixel(pixels-1);}
-    float get_rightmost_x() {return direction > 90 && direction < 270 ? origin_x : get_last_pixel().x;}
-    float get_bottommost_y() {return direction < 180 ? origin_y : get_last_pixel().y;}
+    vec2 get_last_pixel_plus_one() {return get_pixel(pixels-1);}
+    float get_rightmost_x() {return direction > 90 && direction < 270 ? origin_x : get_last_pixel_plus_one().x;}
+    float get_bottommost_y() {return direction < 180 ? origin_y : get_last_pixel_plus_one().y;}
 
     void move_horizontally(float inc)
     {
@@ -263,17 +263,17 @@ int main(int argc, char* argv[])
                             selected_segment = (selected_segment + 1) % segments.size();
                             printf("selected segment %i \t %i pixels \t\t (%.2f, %.2f)  (%.2f, %.2f) \t\t ANTI [ (%.2f, %.2f)  (%.2f, %.2f) ] \n", selected_segment, segments[selected_segment].pixels,
                                                                 segments[selected_segment].origin_x, segments[selected_segment].origin_y,
-                                                                segments[selected_segment].get_last_pixel().x, segments[selected_segment].get_last_pixel().y,
+                                                                segments[selected_segment].get_last_pixel_plus_one().x, segments[selected_segment].get_last_pixel_plus_one().y,
                                                                 width - segments[selected_segment].origin_x, height - segments[selected_segment].origin_y,
-                                                                width - segments[selected_segment].get_last_pixel().x, height - segments[selected_segment].get_last_pixel().y);
+                                                                width - segments[selected_segment].get_last_pixel_plus_one().x, height - segments[selected_segment].get_last_pixel_plus_one().y);
                             break;
                         case SDLK_DOWN:
                             selected_segment = (selected_segment - 1 + segments.size()) % segments.size();
                             printf("selected segment %i \t %i pixels \t\t (%.2f, %.2f)  (%.2f, %.2f) \t\t ANTI [ (%.2f, %.2f)  (%.2f, %.2f) ] \n", selected_segment, segments[selected_segment].pixels,
                                                                 segments[selected_segment].origin_x, segments[selected_segment].origin_y,
-                                                                segments[selected_segment].get_last_pixel().x, segments[selected_segment].get_last_pixel().y,
+                                                                segments[selected_segment].get_last_pixel_plus_one().x, segments[selected_segment].get_last_pixel_plus_one().y,
                                                                 width - segments[selected_segment].origin_x, height - segments[selected_segment].origin_y,
-                                                                width - segments[selected_segment].get_last_pixel().x, height - segments[selected_segment].get_last_pixel().y);
+                                                                width - segments[selected_segment].get_last_pixel_plus_one().x, height - segments[selected_segment].get_last_pixel_plus_one().y);
                             break;
 
                         case SDLK_ESCAPE:
@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
                             for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
                             {
                                 printf("    segments.push_back(Segment(%.2f, %.2f, %.2f, %.2f)); \t\t\t\t // Segment %i \t Length %.2f \t Pixels: %g \n",
-                                    iseg->origin_x, iseg->origin_y, iseg->get_last_pixel().x, iseg->get_last_pixel().y,
+                                    iseg->origin_x, iseg->origin_y, iseg->get_last_pixel_plus_one().x, iseg->get_last_pixel_plus_one().y,
                                     (iseg - segments.begin()), iseg->get_length(), iseg->get_length()/distance_LED_in_cm);
                             }
                             printf("\n");
@@ -378,10 +378,10 @@ int main(int argc, char* argv[])
             float corner1y = iseg->origin_y + sa * L2 + ca * H2;
             float corner2x = iseg->origin_x - ca * L2 - sa * H2;
             float corner2y = iseg->origin_y + sa * L2 - ca * H2;
-            float corner4x = iseg->get_last_pixel().x + ca * L2 + sa * H2;
-            float corner4y = iseg->get_last_pixel().y - sa * L2 + ca * H2;
-            float corner3x = iseg->get_last_pixel().x + ca * L2 - sa * H2;
-            float corner3y = iseg->get_last_pixel().y - sa * L2 - ca * H2;
+            float corner4x = iseg->get_last_pixel_plus_one().x + ca * L2 + sa * H2;
+            float corner4y = iseg->get_last_pixel_plus_one().y - sa * L2 + ca * H2;
+            float corner3x = iseg->get_last_pixel_plus_one().x + ca * L2 - sa * H2;
+            float corner3y = iseg->get_last_pixel_plus_one().y - sa * L2 - ca * H2;
             SDL_RenderDrawLine(renderer, SCALE * corner1x, SCALE * corner1y - 1, SCALE * corner2x, SCALE * corner2y - 1);
             SDL_RenderDrawLine(renderer, SCALE * corner2x, SCALE * corner2y - 1, SCALE * corner3x, SCALE * corner3y - 1);
             SDL_RenderDrawLine(renderer, SCALE * corner3x, SCALE * corner3y - 1, SCALE * corner4x, SCALE * corner4y - 1);

@@ -1,4 +1,4 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include <cmath>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -36,7 +36,7 @@ struct Segment
     void set_direction_to(float to_x, float to_y) {set_direction(180./PI*atan2(origin_y - to_y, to_x - origin_x));}
     void set_length(float l) {pixels = (int)round((l + .01) / distance_LED_in_cm);}
     void set_length_to(float to_x, float to_y) {set_length(sqrt(pow(to_x - origin_x, 2) + pow(to_y - origin_y, 2)));}
-    float get_length() {return sqrt(pow(get_last_pixel().x - origin_x, 2) + pow(get_last_pixel().y - origin_y, 2));}
+    float get_length() {return sqrt(pow(get_last_pixel_plus_one().x - origin_x, 2) + pow(get_last_pixel_plus_one().y - origin_y, 2));}
     vec2 get_pixel(int i)
     {
         return vec2(
@@ -44,9 +44,9 @@ struct Segment
             origin_y - i * distance_LED_in_cm * sin(direction * PI/180.)
         );
     }
-    vec2 get_last_pixel() {return get_pixel(pixels);}
-    float get_rightmost_x() {return direction > 90 && direction < 270 ? origin_x : get_last_pixel().x;}
-    float get_bottommost_y() {return direction < 180 ? origin_y : get_last_pixel().y;}
+    vec2 get_last_pixel_plus_one() {return get_pixel(pixels);}
+    float get_rightmost_x() {return direction > 90 && direction < 270 ? origin_x : get_last_pixel_plus_one().x;}
+    float get_bottommost_y() {return direction < 180 ? origin_y : get_last_pixel_plus_one().y;}
 
     void move_horizontally(float inc)
     {
@@ -66,18 +66,18 @@ struct Segment
     }
 };
 
-int main(int argc, char* argv[]) 
-{ 
-    SDL_Event e; 
+int main(int argc, char* argv[])
+{
+    SDL_Event e;
 
     std::vector<Segment> segments;
     std::vector<Pixel> P;
-    
+
     const float D = distance_LED_in_cm;
     const float N = 40;
     const float A = N * D;
     const float B = A - D;
-    
+
     float width = 78.5;
     float height = 58.5;
     float margin = 4;
@@ -86,53 +86,53 @@ int main(int argc, char* argv[])
 
     // DER ECHTE WAL
     segments.clear();
-    segments.push_back(Segment(69.80, 52.30, 66.58, 48.48));                             // Segment 0    Length 5.00     Pixels: 3 
-    segments.push_back(Segment(66.05, 48.65, 54.66, 46.13));                             // Segment 1    Length 11.67    Pixels: 7 
-    segments.push_back(Segment(54.40, 46.18, 34.40, 46.10));                             // Segment 2    Length 20.00    Pixels: 12 
-    segments.push_back(Segment(46.85, 50.35, 43.84, 46.35));                             // Segment 3    Length 5.00     Pixels: 3 
-    segments.push_back(Segment(45.62, 53.47, 47.91, 51.05));                             // Segment 4    Length 3.33     Pixels: 2 
-    segments.push_back(Segment(36.92, 53.67, 45.25, 54.04));                             // Segment 5    Length 8.33     Pixels: 5 
-    segments.push_back(Segment(30.27, 48.35, 36.25, 54.15));                             // Segment 6    Length 8.33     Pixels: 5 
-    segments.push_back(Segment(34.23, 46.10, 20.99, 47.69));                             // Segment 7    Length 13.33    Pixels: 8 
-    segments.push_back(Segment(20.77, 47.67, 10.87, 46.29));                             // Segment 8    Length 10.00    Pixels: 6 
-    segments.push_back(Segment(12.77, 45.05, 33.93, 40.38));                             // Segment 9    Length 21.67    Pixels: 13 
-    segments.push_back(Segment(33.93, 40.10, 43.22, 36.41));                             // Segment 10   Length 10.00    Pixels: 6 
-    segments.push_back(Segment(43.70, 37.10, 49.48, 40.42));                             // Segment 11   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(50.05, 39.63, 53.14, 38.37));                             // Segment 12   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(52.17, 37.23, 51.28, 34.02));                             // Segment 13   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(50.50, 34.05, 46.09, 31.69));                             // Segment 14   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(46.40, 30.92, 42.86, 36.57));                             // Segment 15   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(32.78, 22.55, 27.95, 21.27));                             // Segment 16   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(27.68, 21.95, 24.80, 23.62));                             // Segment 17   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(18.83, 24.13, 14.03, 22.75));                             // Segment 18   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(13.78, 23.42, 10.98, 25.23));                             // Segment 19   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(10.58, 45.58, 4.84, 39.54));                              // Segment 20   Length 8.33     Pixels: 5 
-    segments.push_back(Segment(5.30, 39.15, 4.59, 29.17));                               // Segment 21   Length 10.00    Pixels: 6 
-    segments.push_back(Segment(5.02, 29.03, 11.18, 17.21));                              // Segment 22   Length 13.33    Pixels: 8 
-    segments.push_back(Segment(11.65, 17.50, 16.91, 13.41));                             // Segment 23   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(14.74, 12.77, 9.87, 8.21));                               // Segment 24   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(9.42, 8.92, 4.64, 10.38));                                // Segment 25   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(8.32, 4.97, 12.84, 7.11));                                // Segment 26   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(12.87, 7.75, 16.90, 13.06));                              // Segment 27   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(17.17, 11.78, 15.45, 5.34));                              // Segment 28   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(16.97, 5.22, 20.17, 4.30));                               // Segment 29   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(17.67, 13.30, 37.61, 11.77));                             // Segment 30   Length 20.00    Pixels: 12 
-    segments.push_back(Segment(34.72, 9.92, 35.78, 6.76));                               // Segment 31   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(36.30, 7.00, 49.51, 5.22));                               // Segment 32   Length 13.33    Pixels: 8 
-    segments.push_back(Segment(49.33, 6.43, 50.48, 9.56));                               // Segment 33   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(49.83, 9.75, 47.79, 16.10));                              // Segment 34   Length 6.67     Pixels: 4 
-    segments.push_back(Segment(37.38, 12.08, 54.47, 18.71));                             // Segment 35   Length 18.33    Pixels: 11 
-    segments.push_back(Segment(54.45, 19.48, 61.37, 26.70));                             // Segment 36   Length 10.00    Pixels: 6 
-    segments.push_back(Segment(61.33, 27.25, 63.82, 38.65));                             // Segment 37   Length 11.67    Pixels: 7 
-    segments.push_back(Segment(64.92, 38.43, 68.25, 38.53));                             // Segment 38   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(67.92, 37.23, 69.77, 29.10));                             // Segment 39   Length 8.33     Pixels: 5 
-    segments.push_back(Segment(71.07, 30.38, 73.91, 32.12));                             // Segment 40   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(73.33, 32.67, 71.77, 42.55));                             // Segment 41   Length 10.00    Pixels: 6 
-    segments.push_back(Segment(70.85, 42.32, 67.67, 43.31));                             // Segment 42   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(69.30, 44.18, 74.18, 45.25));                             // Segment 43   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(73.83, 46.25, 73.80, 51.25));                             // Segment 44   Length 5.00     Pixels: 3 
-    segments.push_back(Segment(73.08, 51.20, 70.02, 52.51));                             // Segment 45   Length 3.33     Pixels: 2 
-    segments.push_back(Segment(9.42, 8.83, 9.42, 8.83));                                 // Segment 46   Length 0.00     Pixels: 0 
+    segments.push_back(Segment(69.80, 52.30, 66.58, 48.48));                             // Segment 0    Length 5.00     Pixels: 3
+    segments.push_back(Segment(66.05, 48.65, 54.66, 46.13));                             // Segment 1    Length 11.67    Pixels: 7
+    segments.push_back(Segment(54.40, 46.18, 34.40, 46.10));                             // Segment 2    Length 20.00    Pixels: 12
+    segments.push_back(Segment(46.85, 50.35, 43.84, 46.35));                             // Segment 3    Length 5.00     Pixels: 3
+    segments.push_back(Segment(45.62, 53.47, 47.91, 51.05));                             // Segment 4    Length 3.33     Pixels: 2
+    segments.push_back(Segment(36.92, 53.67, 45.25, 54.04));                             // Segment 5    Length 8.33     Pixels: 5
+    segments.push_back(Segment(30.27, 48.35, 36.25, 54.15));                             // Segment 6    Length 8.33     Pixels: 5
+    segments.push_back(Segment(34.23, 46.10, 20.99, 47.69));                             // Segment 7    Length 13.33    Pixels: 8
+    segments.push_back(Segment(20.77, 47.67, 10.87, 46.29));                             // Segment 8    Length 10.00    Pixels: 6
+    segments.push_back(Segment(12.77, 45.05, 33.93, 40.38));                             // Segment 9    Length 21.67    Pixels: 13
+    segments.push_back(Segment(33.93, 40.10, 43.22, 36.41));                             // Segment 10   Length 10.00    Pixels: 6
+    segments.push_back(Segment(43.70, 37.10, 49.48, 40.42));                             // Segment 11   Length 6.67     Pixels: 4
+    segments.push_back(Segment(50.05, 39.63, 53.14, 38.37));                             // Segment 12   Length 3.33     Pixels: 2
+    segments.push_back(Segment(52.17, 37.23, 51.28, 34.02));                             // Segment 13   Length 3.33     Pixels: 2
+    segments.push_back(Segment(50.50, 34.05, 46.09, 31.69));                             // Segment 14   Length 5.00     Pixels: 3
+    segments.push_back(Segment(46.40, 30.92, 42.86, 36.57));                             // Segment 15   Length 6.67     Pixels: 4
+    segments.push_back(Segment(32.78, 22.55, 27.95, 21.27));                             // Segment 16   Length 5.00     Pixels: 3
+    segments.push_back(Segment(27.68, 21.95, 24.80, 23.62));                             // Segment 17   Length 3.33     Pixels: 2
+    segments.push_back(Segment(18.83, 24.13, 14.03, 22.75));                             // Segment 18   Length 5.00     Pixels: 3
+    segments.push_back(Segment(13.78, 23.42, 10.98, 25.23));                             // Segment 19   Length 3.33     Pixels: 2
+    segments.push_back(Segment(10.58, 45.58, 4.84, 39.54));                              // Segment 20   Length 8.33     Pixels: 5
+    segments.push_back(Segment(5.30, 39.15, 4.59, 29.17));                               // Segment 21   Length 10.00    Pixels: 6
+    segments.push_back(Segment(5.02, 29.03, 11.18, 17.21));                              // Segment 22   Length 13.33    Pixels: 8
+    segments.push_back(Segment(11.65, 17.50, 16.91, 13.41));                             // Segment 23   Length 6.67     Pixels: 4
+    segments.push_back(Segment(14.74, 12.77, 9.87, 8.21));                               // Segment 24   Length 6.67     Pixels: 4
+    segments.push_back(Segment(9.42, 8.92, 4.64, 10.38));                                // Segment 25   Length 5.00     Pixels: 3
+    segments.push_back(Segment(8.32, 4.97, 12.84, 7.11));                                // Segment 26   Length 5.00     Pixels: 3
+    segments.push_back(Segment(12.87, 7.75, 16.90, 13.06));                              // Segment 27   Length 6.67     Pixels: 4
+    segments.push_back(Segment(17.17, 11.78, 15.45, 5.34));                              // Segment 28   Length 6.67     Pixels: 4
+    segments.push_back(Segment(16.97, 5.22, 20.17, 4.30));                               // Segment 29   Length 3.33     Pixels: 2
+    segments.push_back(Segment(17.67, 13.30, 37.61, 11.77));                             // Segment 30   Length 20.00    Pixels: 12
+    segments.push_back(Segment(34.72, 9.92, 35.78, 6.76));                               // Segment 31   Length 3.33     Pixels: 2
+    segments.push_back(Segment(36.30, 7.00, 49.51, 5.22));                               // Segment 32   Length 13.33    Pixels: 8
+    segments.push_back(Segment(49.33, 6.43, 50.48, 9.56));                               // Segment 33   Length 3.33     Pixels: 2
+    segments.push_back(Segment(49.83, 9.75, 47.79, 16.10));                              // Segment 34   Length 6.67     Pixels: 4
+    segments.push_back(Segment(37.38, 12.08, 54.47, 18.71));                             // Segment 35   Length 18.33    Pixels: 11
+    segments.push_back(Segment(54.45, 19.48, 61.37, 26.70));                             // Segment 36   Length 10.00    Pixels: 6
+    segments.push_back(Segment(61.33, 27.25, 63.82, 38.65));                             // Segment 37   Length 11.67    Pixels: 7
+    segments.push_back(Segment(64.92, 38.43, 68.25, 38.53));                             // Segment 38   Length 3.33     Pixels: 2
+    segments.push_back(Segment(67.92, 37.23, 69.77, 29.10));                             // Segment 39   Length 8.33     Pixels: 5
+    segments.push_back(Segment(71.07, 30.38, 73.91, 32.12));                             // Segment 40   Length 3.33     Pixels: 2
+    segments.push_back(Segment(73.33, 32.67, 71.77, 42.55));                             // Segment 41   Length 10.00    Pixels: 6
+    segments.push_back(Segment(70.85, 42.32, 67.67, 43.31));                             // Segment 42   Length 3.33     Pixels: 2
+    segments.push_back(Segment(69.30, 44.18, 74.18, 45.25));                             // Segment 43   Length 5.00     Pixels: 3
+    segments.push_back(Segment(73.83, 46.25, 73.80, 51.25));                             // Segment 44   Length 5.00     Pixels: 3
+    segments.push_back(Segment(73.08, 51.20, 70.02, 52.51));                             // Segment 45   Length 3.33     Pixels: 2
+    segments.push_back(Segment(9.42, 8.83, 9.42, 8.83));                                 // Segment 46   Length 0.00     Pixels: 0
 
     // scale the shit cause matze made some stupid retardedness
     /*
@@ -157,30 +157,30 @@ int main(int argc, char* argv[])
     const float WIDTH = width * SCALE;
     const float HEIGHT = height * SCALE;
     const float LEDSIZE = 5;
-    
-    if (SDL_Init(SDL_INIT_VIDEO)) 
-    { 
-        printf ("SDL_Init Error: %s", SDL_GetError()); 
-        return 1; 
-    } 
 
-    SDL_Window *window = SDL_CreateWindow("SDL2_gfx test", 100, 100, WIDTH, HEIGHT, SDL_WINDOW_OPENGL); 
-    if (window == NULL) 
-    { 
-        printf ("SDL_CreateWindow Error: %s", SDL_GetError()); 
-        SDL_Quit(); 
-        return 2; 
-    } 
+    if (SDL_Init(SDL_INIT_VIDEO))
+    {
+        printf ("SDL_Init Error: %s", SDL_GetError());
+        return 1;
+    }
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); 
-    if (renderer == NULL) 
-    { 
-        SDL_DestroyWindow(window); 
-        printf ("SDL_CreateRenderer Error: %s", SDL_GetError()); 
-        SDL_Quit(); 
-        return 3; 
-    } 
-    
+    SDL_Window *window = SDL_CreateWindow("SDL2_gfx test", 100, 100, WIDTH, HEIGHT, SDL_WINDOW_OPENGL);
+    if (window == NULL)
+    {
+        printf ("SDL_CreateWindow Error: %s", SDL_GetError());
+        SDL_Quit();
+        return 2;
+    }
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == NULL)
+    {
+        SDL_DestroyWindow(window);
+        printf ("SDL_CreateRenderer Error: %s", SDL_GetError());
+        SDL_Quit();
+        return 3;
+    }
+
     SDL_Rect margin_t, margin_b, margin_l, margin_r, margin_extra1, margin_extra2;
     margin_t.x = 0;
     margin_t.y = 0;
@@ -201,14 +201,14 @@ int main(int argc, char* argv[])
     margin_extra2.y = HEIGHT - margin_extra2.h;
 
     float new_origin_x, new_origin_y, new_to_x, new_to_y;
-    
+
     int quit = 0;
     long time = 0;
     bool firstClick = true;
-    while (!quit) 
-    { 
-        if (SDL_PollEvent(&e)) 
-        { 
+    while (!quit)
+    {
+        if (SDL_PollEvent(&e))
+        {
             switch (e.type)
             {
                 case SDL_MOUSEBUTTONDOWN:
@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
                         firstClick = true;
                     }
                     break;
-                    
+
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym)
                     {
@@ -290,39 +290,39 @@ int main(int argc, char* argv[])
                             selected_segment = (selected_segment + 1) % segments.size();
                             printf("selected segment %i \t %i pixels \t\t (%.2f, %.2f)  (%.2f, %.2f) \t\t ANTI [ (%.2f, %.2f)  (%.2f, %.2f) ] \n", selected_segment, segments[selected_segment].pixels,
                                                                 segments[selected_segment].origin_x, segments[selected_segment].origin_y,
-                                                                segments[selected_segment].get_last_pixel().x, segments[selected_segment].get_last_pixel().y,
+                                                                segments[selected_segment].get_last_pixel_plus_one().x, segments[selected_segment].get_last_pixel_plus_one().y,
                                                                 width - segments[selected_segment].origin_x, height - segments[selected_segment].origin_y,
-                                                                width - segments[selected_segment].get_last_pixel().x, height - segments[selected_segment].get_last_pixel().y);
+                                                                width - segments[selected_segment].get_last_pixel_plus_one().x, height - segments[selected_segment].get_last_pixel_plus_one().y);
                             break;
                         case SDLK_DOWN:
                             selected_segment = (selected_segment - 1 + segments.size()) % segments.size();
                             printf("selected segment %i \t %i pixels \t\t (%.2f, %.2f)  (%.2f, %.2f) \t\t ANTI [ (%.2f, %.2f)  (%.2f, %.2f) ] \n", selected_segment, segments[selected_segment].pixels,
                                                                 segments[selected_segment].origin_x, segments[selected_segment].origin_y,
-                                                                segments[selected_segment].get_last_pixel().x, segments[selected_segment].get_last_pixel().y,
+                                                                segments[selected_segment].get_last_pixel_plus_one().x, segments[selected_segment].get_last_pixel_plus_one().y,
                                                                 width - segments[selected_segment].origin_x, height - segments[selected_segment].origin_y,
-                                                                width - segments[selected_segment].get_last_pixel().x, height - segments[selected_segment].get_last_pixel().y);
+                                                                width - segments[selected_segment].get_last_pixel_plus_one().x, height - segments[selected_segment].get_last_pixel_plus_one().y);
                             break;
-                            
+
                         case SDLK_ESCAPE:
                             quit = 1;
                             break;
-                            
+
                         case SDLK_RETURN:
                             printf("\n");
                             printf("    segments.clear();\n");
                             for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
                             {
                                 printf("    segments.push_back(Segment(%.2f, %.2f, %.2f, %.2f)); \t\t\t\t // Segment %i \t Length %.2f \t Pixels: %g \n",
-                                    iseg->origin_x, iseg->origin_y, iseg->get_last_pixel().x, iseg->get_last_pixel().y,
+                                    iseg->origin_x, iseg->origin_y, iseg->get_last_pixel_plus_one().x, iseg->get_last_pixel_plus_one().y,
                                     (iseg - segments.begin()), iseg->get_length(), iseg->get_length()/distance_LED_in_cm);
                             }
                             printf("\n");
                             break;
                     }
                     break;
-                    
+
                 case SDL_QUIT:
-                    quit = 1; 
+                    quit = 1;
                     break;
             }
         }
@@ -352,7 +352,7 @@ int main(int argc, char* argv[])
                 P.push_back(pixel);
             }
         }
-        
+
         //////////// RENDER ////////////
         for(int p = 0; p < numpix; p++)
         {
@@ -364,15 +364,15 @@ int main(int argc, char* argv[])
             filledCircleColor(renderer, SCALE * P[p].x, SCALE * P[p].y, LEDSIZE, LEDColor(P[p].L));
         }
 
-        SDL_RenderPresent(renderer); 
+        SDL_RenderPresent(renderer);
 //        SDL_Delay(5);
         time++;
-    } 
+    }
 
-    SDL_DestroyRenderer(renderer); 
-    SDL_DestroyWindow(window); 
-    SDL_Quit(); 
-    return 0; 
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return 0;
 }
 
 float pos0 = 0;
@@ -388,7 +388,7 @@ float ang1 = 0;
 LED shader(float time, vec2 coord, int pixel, int segment)
 {
   bool wal = true;
-  
+
   float mod_time = fmod(time, 100.);
   if(mod_time < .01)
   {
@@ -444,25 +444,25 @@ LED shader(float time, vec2 coord, int pixel, int segment)
         float hue_magenta = 300.;
         float hue_avg = .5 * (hue_cyan + hue_magenta);
         float hue_spread = hue_magenta - hue_avg;
-    
+
         LED base = LED(hue_cyan, 0, 1);
 
         float amount = sin(1.4 * coord.x + 4.7 * coord.y + .06 * time);
         LED add = LED(hue_magenta, (1-amount), amount);
-    
+
         LED mix = (1-amount) * base + amount * add;
-        
+
         float mod_time = fmod(time, 240.);
         float yellow_mixing = smoothstep(160., 200., mod_time) * (1. - smoothstep(200., 240., mod_time));
-        mix = (1-yellow_mixing) * mix + yellow_mixing * LED(90, .6, 1); 
-        
+        mix = (1-yellow_mixing) * mix + yellow_mixing * LED(90, .6, 1);
+
         return mix;
     }
     else if(false)
     {
         LED led_bg = wal ? LED(250, 0, .25 + .25 * sin(0.001*time)) : LED(330, 0, .6);
         LED led_shine = wal ? LED(210, .4, 1.) : LED(90, .3, 1.);
-        
+
         if(time < 0.01)
         {
             pos0 = pos1 = 0.5;
@@ -471,10 +471,10 @@ LED shader(float time, vec2 coord, int pixel, int segment)
         }
         if(pos0 > 1 || pos0 < 0) vel0 *= -1;
         if(pos1 > 1 || pos1 < 0) vel1 *= -1;
-        
+
         pos0 += vel0;
         pos1 += vel1;
-        
+
         float distance = coord.get_distance_to(vec2(pos0, pos1));
         float shine = exp(-pow(distance*4.,2.));
         return shine * led_shine + (1-shine) * led_bg;
@@ -514,9 +514,9 @@ LED shader(float time, vec2 coord, int pixel, int segment)
         y = -sin(ang1) * coord.x + cos(ang1) * coord.y - pos3;
         intensity = exp(-12.4 * fabs( min(edge2-fabs(x), edge2-fabs(y)) )) * (1 - smoothstep(140, 167, mod_time2));
         LED cube2 = wal ? LED(166, .2, intensity) : LED(111, 0, intensity);
-        
+
         cube1.mix_shitty(cube2, 1.);
-        
+
         return cube1;
     }
     else if (false) {
@@ -535,7 +535,7 @@ LED shader(float time, vec2 coord, int pixel, int segment)
             }
             ang0 = pseudorandom(2.*div_time) * (2.*PI* + 0.033 * mod_time);
             float edge = .01 * (mod_time - c*50.);
-            
+
             float center_x = 0.4 + 0.2 * pseudorandom(div_time);
             float center_y = 0.4 + 0.2 * pseudorandom(div_time * 7.);
             float x = coord.x - center_x;
@@ -552,8 +552,8 @@ LED shader(float time, vec2 coord, int pixel, int segment)
                 cube.mix_shitty(LED(111, 0, intensity), 1.);
             }
         }
-        
+
         return cube;
-    }    
+    }
 }
 */

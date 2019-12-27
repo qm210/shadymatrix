@@ -101,10 +101,10 @@ int main(int argc, char* argv[])
     float width = 32;
     float height = 32;
     float margin = 0;
-    bool circleShape = true;
+    bool circleShape = false;
     bool helperLines = false;
     bool blurLights = true;
-    bool drawStripRectangle = true;
+    bool drawStripRectangle = false;
     float stripWidth = 1.0;
 
     int selected_segment = 0;
@@ -112,174 +112,24 @@ int main(int argc, char* argv[])
 
     if (argc > 1)
     {
-        if (!std::strcmp(argv[1], "2"))
-        {
-            selected_figure = 1;
-        }
-        else if (!std::strcmp(argv[1], "3"))
-        {
-            selected_figure = 2;
-        }
+        selected_figure = (int)argv[1][0];
     }
 
     /// PATTERN
-/*
+
     segments.clear();
-    segments.push_back(Segment(14.36, 12.27, 17.69, 12.18));                             // Segment 0    Length 3.33     Pixels: 2
-    segments.push_back(Segment(17.50, 12.29, 15.95, 15.24));                             // Segment 1    Length 3.33     Pixels: 2
-    segments.push_back(Segment(15.85, 14.79, 13.94, 12.06));                             // Segment 2    Length 3.33     Pixels: 2
-    segments.push_back(Segment(16.71, 16.22, 17.55, 31.20));                             // Segment 3    Length 15.00    Pixels: 9
-    segments.push_back(Segment(15.98, 31.14, 14.32, 31.03));                             // Segment 4    Length 1.67     Pixels: 1
-    segments.push_back(Segment(14.43, 29.63, 15.43, 14.66));                             // Segment 5    Length 15.00    Pixels: 9
-    segments.push_back(Segment(20.42, 10.37, 25.27, 9.15));                              // Segment 6    Length 5.00     Pixels: 3
-    segments.push_back(Segment(25.37, 9.47, 28.55, 10.44));                              // Segment 7    Length 3.33     Pixels: 2
-    segments.push_back(Segment(28.33, 10.99, 30.48, 17.30));                             // Segment 8    Length 6.67     Pixels: 4
-    segments.push_back(Segment(17.57, 9.12, 19.02, 4.34));                               // Segment 9    Length 5.00     Pixels: 3
-    segments.push_back(Segment(19.55, 4.52, 23.99, 2.22));                               // Segment 10   Length 5.00     Pixels: 3
-    segments.push_back(Segment(14.64, 8.60, 12.91, 5.75));                               // Segment 11   Length 3.33     Pixels: 2
-    segments.push_back(Segment(12.62, 5.89, 8.11, 3.72));                                // Segment 12   Length 5.00     Pixels: 3
-    segments.push_back(Segment(8.00, 4.22, 3.66, 6.71));                                 // Segment 13   Length 5.00     Pixels: 3
-    segments.push_back(Segment(12.03, 10.59, 7.20, 9.31));                               // Segment 14   Length 5.00     Pixels: 3
-    segments.push_back(Segment(7.02, 9.39, 2.07, 13.86));                                // Segment 15   Length 6.67     Pixels: 4
-    segments.push_back(Segment(2.02, 14.22, 2.17, 19.21));                               // Segment 16   Length 5.00     Pixels: 3
-    segments.push_back(Segment(20.63, 13.15, 25.40, 14.64));                             // Segment 17   Length 5.00     Pixels: 3
-    segments.push_back(Segment(25.14, 15.22, 26.56, 20.02));                             // Segment 18   Length 5.00     Pixels: 3
-    segments.push_back(Segment(20.33, 14.04, 23.47, 15.18));                             // Segment 19   Length 3.33     Pixels: 2
-    segments.push_back(Segment(23.71, 15.08, 25.04, 18.14));                             // Segment 20   Length 3.33     Pixels: 2
-    segments.push_back(Segment(20.42, 11.12, 25.33, 10.22));                             // Segment 21   Length 5.00     Pixels: 3
-    segments.push_back(Segment(25.00, 10.67, 28.27, 11.31));                             // Segment 22   Length 3.33     Pixels: 2
-    segments.push_back(Segment(27.42, 11.83, 29.44, 16.41));                             // Segment 23   Length 5.00     Pixels: 3
-    segments.push_back(Segment(18.29, 9.54, 19.28, 6.36));                               // Segment 24   Length 3.33     Pixels: 2
-    segments.push_back(Segment(19.46, 6.21, 23.24, 2.94));                               // Segment 25   Length 5.00     Pixels: 3
-    segments.push_back(Segment(15.04, 7.46, 11.81, 3.64));                               // Segment 26   Length 5.00     Pixels: 3
-    segments.push_back(Segment(11.54, 4.00, 8.28, 3.32));                                // Segment 27   Length 3.33     Pixels: 2
-    segments.push_back(Segment(8.75, 3.12, 4.24, 5.29));                                 // Segment 28   Length 5.00     Pixels: 3
-    segments.push_back(Segment(11.03, 11.25, 6.13, 10.26));                              // Segment 29   Length 5.00     Pixels: 3
-    segments.push_back(Segment(6.82, 11.06, 1.77, 15.41));                               // Segment 30   Length 6.67     Pixels: 4
-    segments.push_back(Segment(2.92, 15.25, 2.81, 18.58));                               // Segment 31   Length 3.33     Pixels: 2
-*/
+    for (float y = 0; y < height; y += distance_LED_in_cm)
+    {
+        segments.push_back(Segment(-originOffsetX, y - originOffsetY, width - originOffsetX, y - originOffsetY));
+    }
 
     figures.clear();
-
-    segments.clear();
-    segments.push_back(Segment(-2.3, -7, -3.5, -8.3));
-    segments.push_back(Segment(-5, -9.4, -8, -10.6));
-    segments.push_back(Segment(-9.9, -10.2, -12.4, -8));
-    segments.push_back(Segment(-12.6, -6.8, -10, -8.8));
-    segments.push_back(Segment(-7.7, -9.3, -6.2, -8.8));
-    segments.push_back(Segment(-3.6, -7, -3.6, -7));
-    segments.push_back(Segment(-5, -4.6, -8.3, -4.5));
-    segments.push_back(Segment(-10.5, -3.5, -13.7, 0.4));
-    segments.push_back(Segment(-14.1, 2.3, -13.8, 5.7));
-    segments.push_back(Segment(-12.3, 4.7, -12.6, 2.9));
-    segments.push_back(Segment(-12.2, 0.4, -10.3, -2.2));
-    segments.push_back(Segment(-7.6, -3.5, -4.2, -3.6));
-    segments.push_back(Segment(-0.8, -3, 0.8, -2.9, 1));
-    segments.push_back(Segment(0, -1.8, 0, -1.8, 1));
-    segments.push_back(Segment(-0.6, 0.9, -1.5, 14.1, 1));
-    segments.push_back(Segment(0, 15.3, 0, 15.3, 1));
-    segments.push_back(Segment(1.5, 14.1, 0.6, 0.9, 1));
-    segments.push_back(Segment(5.2, -1.9, 6.8, -1.3));
-    segments.push_back(Segment(9, 0.5, 9.8, 1.9));
-    segments.push_back(Segment(11.1, 2.3, 9.5, -0.6));
-    segments.push_back(Segment(8, -1.9, 5, -3.2));
-    segments.push_back(Segment(5.9, -5.8, 7.4, -6.5));
-    segments.push_back(Segment(9.8, -6.6, 9.8, -6.6));
-    segments.push_back(Segment(11.8, -4.4, 13.2, -1.3));
-    segments.push_back(Segment(14.4, -1, 12.2, -5.6));
-    segments.push_back(Segment(11, -7.1, 9.5, -7.8));
-    segments.push_back(Segment(7.6, -7.8, 4.7, -6.2));
-    segments.push_back(Segment(2, -7.4, 2.7, -8.9));
-    segments.push_back(Segment(4.7, -10.4, 6.4, -10.6));
-    segments.push_back(Segment(7.1, -11.7, 3.8, -11.3));
-    segments.push_back(Segment(2.4, -10.2, 0.8, -7.1));
-    segments.push_back(Segment(1.7, -4, -1.7, -4.2, 1));
-    figures.push_back(segments);
-
-    segments.clear();
-    segments.push_back(Segment(-3.1, -7.4, -3.8, -8.9));
-    segments.push_back(Segment(-5.3, -10, -8.8, -10.2));
-    segments.push_back(Segment(-10.5, -9.5, -12.7, -7));
-    segments.push_back(Segment(-11.1, -7, -9.8, -8));
-    segments.push_back(Segment(-7.8, -8.2, -6.2, -7.8));
-    segments.push_back(Segment(-4.2, -7, -4.2, -7));
-    segments.push_back(Segment(-4.6, -3, -7.9, -3));
-    segments.push_back(Segment(-9.9, -2.3, -12.7, -0.5));
-    segments.push_back(Segment(-13.6, 1.1, -14, 6));
-    segments.push_back(Segment(-12.8, 4.9, -11.4, 1.9));
-    segments.push_back(Segment(-10, 0.5, -8.6, -0.3));
-    segments.push_back(Segment(-7, -1.7, -5.4, -1.8));
-    segments.push_back(Segment(-0.8, -2.9, 0.8, -2.9, 2));
-    segments.push_back(Segment(0, -1.8, 0, -1.8, 2));
-    segments.push_back(Segment(-0.8, 0.7, -1.6, 13.9, 2));
-    segments.push_back(Segment(0, 15.5, 0, 15.5, 2));
-    segments.push_back(Segment(1.6, 13.9, 0.8, 0.7, 2));
-    segments.push_back(Segment(5.2, -1.8, 6.4, -0.7));
-    segments.push_back(Segment(7.7, 0.7, 8.5, 2.1));
-    segments.push_back(Segment(10.1, 3.2, 9.2, 0));
-    segments.push_back(Segment(8, -1.6, 5.2, -3.2));
-    segments.push_back(Segment(1.7, -4, -1.7, -4.1, 2));
-    segments.push_back(Segment(4.4, -6, 6, -6.5));
-    segments.push_back(Segment(8, -6.7, 8, -6.7));
-    segments.push_back(Segment(9.8, -6, 12.6, -4.3));
-    segments.push_back(Segment(14.4, -4, 11.1, -7.8));
-    segments.push_back(Segment(9.5, -8.8, 7.9, -9));
-    segments.push_back(Segment(6, -8.6, 3.2, -6.8));
-    segments.push_back(Segment(0.8, -8.3, 1.3, -10));
-    segments.push_back(Segment(2.1, -11.7, 3.1, -13));
-    segments.push_back(Segment(2.8, -14.4, 0.4, -12.2));
-    segments.push_back(Segment(-0.3, -10.4, -0.4, -7.1));
-    figures.push_back(segments);
-
-    segments.clear();
-    segments.push_back(Segment(1.3, -7.5, 1.6, -10.8));
-    segments.push_back(Segment(0.8, -12.7, -2, -14.5));
-    segments.push_back(Segment(-1.8, -12.9, -0.7, -11.8));
-    segments.push_back(Segment(0.1, -10.1, 0.2, -8.4));
-    segments.push_back(Segment(-2.8, -7.6, -4, -8.9));
-    segments.push_back(Segment(-5.7, -9.6, -8.9, -9.3));
-    segments.push_back(Segment(-10.8, -8.6, -13.3, -6.6));
-    segments.push_back(Segment(-13.1, -5.6, -10.1, -6.9));
-    segments.push_back(Segment(-8, -7.5, -6.3, -7.7));
-    segments.push_back(Segment(-4.4, -7.3, -4.4, -7.3));
-    segments.push_back(Segment(-4.6, -4.1, -8.8, -3.4));
-    segments.push_back(Segment(-9.5, -2.6, -13.2, 0.9));
-    segments.push_back(Segment(-14.1, 2.6, -14.1, 6));
-    segments.push_back(Segment(-12.8, 4.9, -12.4, 3.3));
-    segments.push_back(Segment(-11.4, 1.7, -9, -0.6));
-    segments.push_back(Segment(-7.2, -1.7, -5.6, -2.5));
-    segments.push_back(Segment(-1, -3.2, 0.8, -3.1, 3));
-    segments.push_back(Segment(0, -2, 0, -2, 3));
-    segments.push_back(Segment(-0.7, 0.4, -1.6, 13.8, 3));
-    segments.push_back(Segment(0, 15.5, 0, 15.5, 3));
-    segments.push_back(Segment(1.4, 13.8, 0.6, 0.5, 3));
-    segments.push_back(Segment(4.8, -2.4, 6.3, -1.9));
-    segments.push_back(Segment(8, -0.8, 9.2, 0.4));
-    segments.push_back(Segment(11, 1, 9.3, -1.8));
-    segments.push_back(Segment(7.8, -3, 4.5, -3.5));
-    segments.push_back(Segment(1.7, -4.2, -1.7, -4.2, 3));
-    segments.push_back(Segment(6, -6.7, 7.6, -7.3));
-    segments.push_back(Segment(9.7, -7.5, 9.7, -7.5));
-    segments.push_back(Segment(11.4, -6.7, 13.3, -4));
-    segments.push_back(Segment(14.8, -3.6, 12.8, -8));
-    segments.push_back(Segment(10.8, -9.3, 9.2, -9.4));
-    segments.push_back(Segment(7.3, -9, 4.5, -7.2));
     figures.push_back(segments);
 
     segments = figures[selected_figure];
 
     /// END PATTERN
 
-    P.clear();
-    for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
-    {
-        int segcount = iseg - segments.begin();
-        for (int p = 0; p < iseg->pixels; p++)
-        {
-            Pixel pixel = Pixel(iseg->get_pixel(p), segcount);
-            P.push_back(pixel);
-        }
-    }
     float meters_required = numpix * distance_LED_in_m;
     printf("Pixels: %i\nMeters: %g\nWidth: %g\nHeight: %g\n", numpix, meters_required, width, height);
 
@@ -537,38 +387,41 @@ int main(int argc, char* argv[])
         }
 
         //////// STRIP RECTANGLE //////////
-        float L2 = .5 * distance_LED_in_cm;
-        float H2 = .5 * stripWidth;
-        for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
+        if (drawStripRectangle)
         {
-            if (iseg - segments.begin() == selected_segment)
+            float L2 = .5 * distance_LED_in_cm;
+            float H2 = .5 * stripWidth;
+            for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
             {
-                SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-            }
-            else
-            {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 200, 128);
-            }
+                if (iseg - segments.begin() == selected_segment)
+                {
+                    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+                }
+                else
+                {
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 128);
+                }
 
-            float ca = cos(iseg->direction * PI / 180.);
-            float sa = sin(iseg->direction * PI / 180.);
-            float corner1x = iseg->origin_x - ca * L2 + sa * H2;
-            float corner1y = iseg->origin_y + sa * L2 + ca * H2;
-            float corner2x = iseg->origin_x - ca * L2 - sa * H2;
-            float corner2y = iseg->origin_y + sa * L2 - ca * H2;
-            float corner4x = iseg->get_last_pixel().x + ca * L2 + sa * H2;
-            float corner4y = iseg->get_last_pixel().y - sa * L2 + ca * H2;
-            float corner3x = iseg->get_last_pixel().x + ca * L2 - sa * H2;
-            float corner3y = iseg->get_last_pixel().y - sa * L2 - ca * H2;
-            SDL_RenderDrawLine(renderer, SCALE * corner1x, SCALE * corner1y - 1, SCALE * corner2x, SCALE * corner2y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner2x, SCALE * corner2y - 1, SCALE * corner3x, SCALE * corner3y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner3x, SCALE * corner3y - 1, SCALE * corner4x, SCALE * corner4y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner4x, SCALE * corner4y - 1, SCALE * corner1x, SCALE * corner1y - 1);
-            //SDL_RenderDrawLine(renderer, SCALE * corner1x + 1, SCALE * corner1y, SCALE * corner2x + 1, SCALE * corner2y);
-            SDL_RenderDrawLine(renderer, SCALE * corner2x + 1, SCALE * corner2y, SCALE * corner3x + 1, SCALE * corner3y);
-            SDL_RenderDrawLine(renderer, SCALE * corner3x + 1, SCALE * corner3y, SCALE * corner4x + 1, SCALE * corner4y);
-            SDL_RenderDrawLine(renderer, SCALE * corner4x + 1, SCALE * corner4y, SCALE * corner1x + 1, SCALE * corner1y);
-            SDL_RenderDrawLine(renderer, SCALE * corner3x - 1, SCALE * corner3y + 1, SCALE * corner4x - 1, SCALE * corner4y);
+                float ca = cos(iseg->direction * PI / 180.);
+                float sa = sin(iseg->direction * PI / 180.);
+                float corner1x = iseg->origin_x - ca * L2 + sa * H2;
+                float corner1y = iseg->origin_y + sa * L2 + ca * H2;
+                float corner2x = iseg->origin_x - ca * L2 - sa * H2;
+                float corner2y = iseg->origin_y + sa * L2 - ca * H2;
+                float corner4x = iseg->get_last_pixel().x + ca * L2 + sa * H2;
+                float corner4y = iseg->get_last_pixel().y - sa * L2 + ca * H2;
+                float corner3x = iseg->get_last_pixel().x + ca * L2 - sa * H2;
+                float corner3y = iseg->get_last_pixel().y - sa * L2 - ca * H2;
+                SDL_RenderDrawLine(renderer, SCALE * corner1x, SCALE * corner1y - 1, SCALE * corner2x, SCALE * corner2y - 1);
+                SDL_RenderDrawLine(renderer, SCALE * corner2x, SCALE * corner2y - 1, SCALE * corner3x, SCALE * corner3y - 1);
+                SDL_RenderDrawLine(renderer, SCALE * corner3x, SCALE * corner3y - 1, SCALE * corner4x, SCALE * corner4y - 1);
+                SDL_RenderDrawLine(renderer, SCALE * corner4x, SCALE * corner4y - 1, SCALE * corner1x, SCALE * corner1y - 1);
+                //SDL_RenderDrawLine(renderer, SCALE * corner1x + 1, SCALE * corner1y, SCALE * corner2x + 1, SCALE * corner2y);
+                SDL_RenderDrawLine(renderer, SCALE * corner2x + 1, SCALE * corner2y, SCALE * corner3x + 1, SCALE * corner3y);
+                SDL_RenderDrawLine(renderer, SCALE * corner3x + 1, SCALE * corner3y, SCALE * corner4x + 1, SCALE * corner4y);
+                SDL_RenderDrawLine(renderer, SCALE * corner4x + 1, SCALE * corner4y, SCALE * corner1x + 1, SCALE * corner1y);
+                SDL_RenderDrawLine(renderer, SCALE * corner3x - 1, SCALE * corner3y + 1, SCALE * corner4x - 1, SCALE * corner4y);
+            }
         }
 
         SDL_RenderPresent(renderer);
@@ -592,20 +445,20 @@ float vel[4];
 float ang[4];
 float lumi[4];
 float white[4];
-int counter[4];
-int counter_max[4];
+int counter[3];
+int counter_max[3];
 
 #define globalHue 224
 #define WATER_HUE globalHue
-#define WATER_SCALE .7
-#define WATER_SPEED .01
-#define WATER_SPEED_RND 0.003
-#define WATER_BG 0.6
+#define WATER_SCALE .5
+#define WATER_SPEED .008
+#define WATER_SPEED_RND 0.42
+#define WATER_PERIOD_MIN 64
+#define WATER_PERIOD_RND 16
+#define WATER_BG 0.7
 #define WATER_WHITE_MAX 1
-#define WATER_WHITE_EXPONENT 1.6
-#define WATER_GRADIENT_EXPONENT 1.8
-#define WATER_Y_OFFSET 0.3
-#define WATER_Y_HEIGHT (1-WATER_Y_OFFSET)
+#define WATER_WHITE_EXPONENT 2.6
+#define WATER_Y_OFFSET 0.47
 
 void init_pattern()
 {
@@ -618,39 +471,36 @@ void init_pattern()
         white[s] = 0.;
     }
 
-    for (int p = 0; p < 3; p++)
-    {
-        vel[p] = WATER_SPEED + WATER_SPEED_RND * (2. * 0.01 * random(100) - 1.);
-        counter_max[p] = (int)ceil((WATER_Y_HEIGHT + WATER_SCALE)/vel[p]);
-    }
+    counter_max[0] = WATER_PERIOD_MIN + random(WATER_PERIOD_RND);
+    counter_max[1] = WATER_PERIOD_MIN + random(WATER_PERIOD_RND);
+    counter_max[2] = WATER_PERIOD_MIN + random(WATER_PERIOD_RND);
+
     counter[0] = 0;
-    counter[1] = -counter_max[1] / 3;
-    counter[2] = -counter_max[2] * 2 / 3;
+    counter[1] = -WATER_PERIOD_MIN / 3;
+    counter[2] = -WATER_PERIOD_MIN * 2 / 3;
 }
 
 void proceed_pattern(float time)
 {
     for(int p=0; p<3; p++)
     {
-        pos[p] = vel[p] * counter[p];
         if (counter[p] < counter_max[p])
         {
+            pos[p] = WATER_SPEED * counter[p];
             counter[p]++;
         }
-        if (counter[p] >= counter_max[p])
+        if (counter[p] == counter_max[p])
         {
             lumi[p] = WATER_BG + (1 - WATER_BG) * 0.01 * random(100);
             white[p] = WATER_WHITE_MAX * pow(0.01 * random(100), WATER_WHITE_EXPONENT);
-            vel[p] = WATER_SPEED + WATER_SPEED_RND * (2. * 0.01 * random(100) - 1.);
-            counter_max[p] = (int)ceil((WATER_Y_HEIGHT + WATER_SCALE)/vel[p]);
+            counter_max[p] = WATER_PERIOD_MIN + random(WATER_PERIOD_RND);
             counter[p] = 0;
         }
     }
-    //printf("STEP %f %i %i %f\n", pos[0], counter[0], counter_max[0], vel[0]);
-
-    // leaf glow counter?
+    // printf("STEP %f %i %i %f\n", pos[0], counter[0], counter_max[0], white[0]);
 }
 
+// Reminder: coord is scaled as [0,1] in each dimension.
 LED shader(float time, vec2 coord, int pixel, int segment, int type)
 {
     if (debug)
@@ -662,29 +512,16 @@ LED shader(float time, vec2 coord, int pixel, int segment, int type)
         return LED(200, .5, 1);
     }
 
-    if (type > 0) // tie
+    if (type == 1) // tie
     {
-        float hue = 0.;
-        if (type == 3)
-        {
-            hue = WATER_HUE;
-        }
-        else if (type == 1)
-        {
-            hue = 180. + .5 * WATER_HUE;
-        }
-        else if (type == 2)
-        {
-            hue = 0.;
-        }
-        LED led = LED(hue, 0, WATER_BG);
+        LED led = LED(WATER_HUE, 0, WATER_BG);
 
         for(int p=0; p<3; p++)
         {
             float ypos = (float)(pos[p] - coord.y + WATER_Y_OFFSET);
-            if (ypos >= 0 && ypos <= WATER_SCALE)
+            if (ypos >= 0)
             {
-                led.mix(LED(hue, white[p], lumi[p] * max(0., pow(1 - ypos / WATER_SCALE, WATER_GRADIENT_EXPONENT))), 1);
+                led.mix(LED(WATER_HUE, white[p], lumi[p] * max(0., (1 - ypos / WATER_SCALE))), 1);
             }
         }
 
@@ -692,17 +529,15 @@ LED shader(float time, vec2 coord, int pixel, int segment, int type)
     }
     else // leaves
     {
+        LED led = LED(100, 0, .8);
+
         float r = sqrt(pow(coord.x - .5, 2) + pow(coord.y - .5, 2));
         float phi = 180./PI * atan2(coord.y - .5, coord.x - .5);
+        float spiralHue = 100. + 30. * sin(10. * r + 0.01 * phi - 0.2 * time);
 
-        float modTime = fmod(time, 200.);
-        float glowEffect = exp(-pow(modTime - 100., 2.)/(150.)) * (.5 + .5 * sin(10. * r + 0.002 * phi - 0.2 * time));
-        float waberEffect = (.5 + .5 * sin(0.07 * time)) * (.5 + .5 * sin(0.09 * time));
-        float spiralHue = 120. - 20. * glowEffect - 10. * waberEffect;
-        float spiralWhite = 0.1 * glowEffect;
-        float spiralLumi = .6 + .3 * glowEffect + .2 * waberEffect;
+        LED led_spiral = LED(spiralHue, 0, 1);
 
-        LED led_spiral = LED(spiralHue, spiralWhite, min(spiralLumi, 1.f));
+//        printf("PIXEL %i %f %f %f %f\n", pixel, coord.x, coord.y, r, phi);
 
         return led_spiral;
     }
