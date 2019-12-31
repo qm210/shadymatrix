@@ -17,6 +17,8 @@ const float distance_LED_in_m = 0.01 * distance_LED_in_cm;
 const float originOffsetX = 16;
 const float originOffsetY = 16;
 
+const int nr_of_patterns = 2;
+
 struct Segment
 {
     float origin_x;
@@ -80,7 +82,7 @@ struct Segment
 int count_LEDs_in_cross_matrix(int, int);
 void init_pattern();
 void proceed_pattern(float time);
-LED shader(float time, vec2 coord, int pixel, int segment, int type);
+LED shader(int pattern, float time, vec2 coord, int pixel, int segment, int type);
 void print_all_segments(std::vector<Segment> segments);
 
 bool debug = false;
@@ -104,11 +106,12 @@ int main(int argc, char* argv[])
     bool circleShape = true;
     bool helperLines = false;
     bool blurLights = true;
-    bool drawStripRectangle = true;
+    bool drawStripRectangle = false;
     float stripWidth = 1.0;
 
     int selected_segment = 0;
     int selected_figure = 0;
+    int selected_pattern = 0;
 
     if (argc > 1)
     {
@@ -123,41 +126,6 @@ int main(int argc, char* argv[])
     }
 
     /// PATTERN
-/*
-    segments.clear();
-    segments.push_back(Segment(14.36, 12.27, 17.69, 12.18));                             // Segment 0    Length 3.33     Pixels: 2
-    segments.push_back(Segment(17.50, 12.29, 15.95, 15.24));                             // Segment 1    Length 3.33     Pixels: 2
-    segments.push_back(Segment(15.85, 14.79, 13.94, 12.06));                             // Segment 2    Length 3.33     Pixels: 2
-    segments.push_back(Segment(16.71, 16.22, 17.55, 31.20));                             // Segment 3    Length 15.00    Pixels: 9
-    segments.push_back(Segment(15.98, 31.14, 14.32, 31.03));                             // Segment 4    Length 1.67     Pixels: 1
-    segments.push_back(Segment(14.43, 29.63, 15.43, 14.66));                             // Segment 5    Length 15.00    Pixels: 9
-    segments.push_back(Segment(20.42, 10.37, 25.27, 9.15));                              // Segment 6    Length 5.00     Pixels: 3
-    segments.push_back(Segment(25.37, 9.47, 28.55, 10.44));                              // Segment 7    Length 3.33     Pixels: 2
-    segments.push_back(Segment(28.33, 10.99, 30.48, 17.30));                             // Segment 8    Length 6.67     Pixels: 4
-    segments.push_back(Segment(17.57, 9.12, 19.02, 4.34));                               // Segment 9    Length 5.00     Pixels: 3
-    segments.push_back(Segment(19.55, 4.52, 23.99, 2.22));                               // Segment 10   Length 5.00     Pixels: 3
-    segments.push_back(Segment(14.64, 8.60, 12.91, 5.75));                               // Segment 11   Length 3.33     Pixels: 2
-    segments.push_back(Segment(12.62, 5.89, 8.11, 3.72));                                // Segment 12   Length 5.00     Pixels: 3
-    segments.push_back(Segment(8.00, 4.22, 3.66, 6.71));                                 // Segment 13   Length 5.00     Pixels: 3
-    segments.push_back(Segment(12.03, 10.59, 7.20, 9.31));                               // Segment 14   Length 5.00     Pixels: 3
-    segments.push_back(Segment(7.02, 9.39, 2.07, 13.86));                                // Segment 15   Length 6.67     Pixels: 4
-    segments.push_back(Segment(2.02, 14.22, 2.17, 19.21));                               // Segment 16   Length 5.00     Pixels: 3
-    segments.push_back(Segment(20.63, 13.15, 25.40, 14.64));                             // Segment 17   Length 5.00     Pixels: 3
-    segments.push_back(Segment(25.14, 15.22, 26.56, 20.02));                             // Segment 18   Length 5.00     Pixels: 3
-    segments.push_back(Segment(20.33, 14.04, 23.47, 15.18));                             // Segment 19   Length 3.33     Pixels: 2
-    segments.push_back(Segment(23.71, 15.08, 25.04, 18.14));                             // Segment 20   Length 3.33     Pixels: 2
-    segments.push_back(Segment(20.42, 11.12, 25.33, 10.22));                             // Segment 21   Length 5.00     Pixels: 3
-    segments.push_back(Segment(25.00, 10.67, 28.27, 11.31));                             // Segment 22   Length 3.33     Pixels: 2
-    segments.push_back(Segment(27.42, 11.83, 29.44, 16.41));                             // Segment 23   Length 5.00     Pixels: 3
-    segments.push_back(Segment(18.29, 9.54, 19.28, 6.36));                               // Segment 24   Length 3.33     Pixels: 2
-    segments.push_back(Segment(19.46, 6.21, 23.24, 2.94));                               // Segment 25   Length 5.00     Pixels: 3
-    segments.push_back(Segment(15.04, 7.46, 11.81, 3.64));                               // Segment 26   Length 5.00     Pixels: 3
-    segments.push_back(Segment(11.54, 4.00, 8.28, 3.32));                                // Segment 27   Length 3.33     Pixels: 2
-    segments.push_back(Segment(8.75, 3.12, 4.24, 5.29));                                 // Segment 28   Length 5.00     Pixels: 3
-    segments.push_back(Segment(11.03, 11.25, 6.13, 10.26));                              // Segment 29   Length 5.00     Pixels: 3
-    segments.push_back(Segment(6.82, 11.06, 1.77, 15.41));                               // Segment 30   Length 6.67     Pixels: 4
-    segments.push_back(Segment(2.92, 15.25, 2.81, 18.58));                               // Segment 31   Length 3.33     Pixels: 2
-*/
 
     figures.clear();
 
@@ -367,6 +335,7 @@ int main(int argc, char* argv[])
                     break;
 
                 case SDL_KEYDOWN:
+
                     switch (e.key.keysym.sym)
                     {
                         case SDLK_BACKSPACE:
@@ -468,6 +437,9 @@ int main(int argc, char* argv[])
                         case SDLK_RETURN:
                             print_all_segments(segments);
                             break;
+
+                        case SDLK_TAB:
+                            selected_pattern = (selected_pattern + 1) % nr_of_patterns;
                     }
                     break;
 
@@ -517,7 +489,7 @@ int main(int argc, char* argv[])
             {
                 Pixel pixel = Pixel(iseg->get_pixel(p), segcount);
                 vec2 relative_coord = vec2(pixel.x/width, pixel.y/height);
-                pixel.L = shader(time, relative_coord, numpix, segcount - selected_segment, iseg->type);
+                pixel.L = shader(selected_pattern, time, relative_coord, numpix, segcount - selected_segment, iseg->type);
                 P.push_back(pixel);
             }
         }
@@ -537,38 +509,42 @@ int main(int argc, char* argv[])
         }
 
         //////// STRIP RECTANGLE //////////
-        float L2 = .5 * distance_LED_in_cm;
-        float H2 = .5 * stripWidth;
-        for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
-        {
-            if (iseg - segments.begin() == selected_segment)
-            {
-                SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-            }
-            else
-            {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 200, 128);
-            }
 
-            float ca = cos(iseg->direction * PI / 180.);
-            float sa = sin(iseg->direction * PI / 180.);
-            float corner1x = iseg->origin_x - ca * L2 + sa * H2;
-            float corner1y = iseg->origin_y + sa * L2 + ca * H2;
-            float corner2x = iseg->origin_x - ca * L2 - sa * H2;
-            float corner2y = iseg->origin_y + sa * L2 - ca * H2;
-            float corner4x = iseg->get_last_pixel().x + ca * L2 + sa * H2;
-            float corner4y = iseg->get_last_pixel().y - sa * L2 + ca * H2;
-            float corner3x = iseg->get_last_pixel().x + ca * L2 - sa * H2;
-            float corner3y = iseg->get_last_pixel().y - sa * L2 - ca * H2;
-            SDL_RenderDrawLine(renderer, SCALE * corner1x, SCALE * corner1y - 1, SCALE * corner2x, SCALE * corner2y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner2x, SCALE * corner2y - 1, SCALE * corner3x, SCALE * corner3y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner3x, SCALE * corner3y - 1, SCALE * corner4x, SCALE * corner4y - 1);
-            SDL_RenderDrawLine(renderer, SCALE * corner4x, SCALE * corner4y - 1, SCALE * corner1x, SCALE * corner1y - 1);
-            //SDL_RenderDrawLine(renderer, SCALE * corner1x + 1, SCALE * corner1y, SCALE * corner2x + 1, SCALE * corner2y);
-            SDL_RenderDrawLine(renderer, SCALE * corner2x + 1, SCALE * corner2y, SCALE * corner3x + 1, SCALE * corner3y);
-            SDL_RenderDrawLine(renderer, SCALE * corner3x + 1, SCALE * corner3y, SCALE * corner4x + 1, SCALE * corner4y);
-            SDL_RenderDrawLine(renderer, SCALE * corner4x + 1, SCALE * corner4y, SCALE * corner1x + 1, SCALE * corner1y);
-            SDL_RenderDrawLine(renderer, SCALE * corner3x - 1, SCALE * corner3y + 1, SCALE * corner4x - 1, SCALE * corner4y);
+        if (drawStripRectangle)
+        {
+            float L2 = .5 * distance_LED_in_cm;
+            float H2 = .5 * stripWidth;
+            for (std::vector<Segment>::iterator iseg = segments.begin(); iseg != segments.end(); ++iseg)
+            {
+                if (iseg - segments.begin() == selected_segment)
+                {
+                    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+                }
+                else
+                {
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 128);
+                }
+
+                float ca = cos(iseg->direction * PI / 180.);
+                float sa = sin(iseg->direction * PI / 180.);
+                float corner1x = iseg->origin_x - ca * L2 + sa * H2;
+                float corner1y = iseg->origin_y + sa * L2 + ca * H2;
+                float corner2x = iseg->origin_x - ca * L2 - sa * H2;
+                float corner2y = iseg->origin_y + sa * L2 - ca * H2;
+                float corner4x = iseg->get_last_pixel().x + ca * L2 + sa * H2;
+                float corner4y = iseg->get_last_pixel().y - sa * L2 + ca * H2;
+                float corner3x = iseg->get_last_pixel().x + ca * L2 - sa * H2;
+                float corner3y = iseg->get_last_pixel().y - sa * L2 - ca * H2;
+                SDL_RenderDrawLine(renderer, SCALE * corner1x, SCALE * corner1y - 1, SCALE * corner2x, SCALE * corner2y - 1);
+                SDL_RenderDrawLine(renderer, SCALE * corner2x, SCALE * corner2y - 1, SCALE * corner3x, SCALE * corner3y - 1);
+                SDL_RenderDrawLine(renderer, SCALE * corner3x, SCALE * corner3y - 1, SCALE * corner4x, SCALE * corner4y - 1);
+                SDL_RenderDrawLine(renderer, SCALE * corner4x, SCALE * corner4y - 1, SCALE * corner1x, SCALE * corner1y - 1);
+                //SDL_RenderDrawLine(renderer, SCALE * corner1x + 1, SCALE * corner1y, SCALE * corner2x + 1, SCALE * corner2y);
+                SDL_RenderDrawLine(renderer, SCALE * corner2x + 1, SCALE * corner2y, SCALE * corner3x + 1, SCALE * corner3y);
+                SDL_RenderDrawLine(renderer, SCALE * corner3x + 1, SCALE * corner3y, SCALE * corner4x + 1, SCALE * corner4y);
+                SDL_RenderDrawLine(renderer, SCALE * corner4x + 1, SCALE * corner4y, SCALE * corner1x + 1, SCALE * corner1y);
+                SDL_RenderDrawLine(renderer, SCALE * corner3x - 1, SCALE * corner3y + 1, SCALE * corner4x - 1, SCALE * corner4y);
+            }
         }
 
         SDL_RenderPresent(renderer);
@@ -592,6 +568,7 @@ float vel[4];
 float ang[4];
 float lumi[4];
 float white[4];
+float hue[4];
 int counter[4];
 int counter_max[4];
 
@@ -616,6 +593,7 @@ void init_pattern()
         ang[s] = 0.;
         lumi[s] = 0.;
         white[s] = 0.;
+        hue[s] = 0;
     }
 
     for (int p = 0; p < 3; p++)
@@ -626,6 +604,11 @@ void init_pattern()
     counter[0] = 0;
     counter[1] = -counter_max[1] / 3;
     counter[2] = -counter_max[2] * 2 / 3;
+
+    counter[3] = 0;
+    counter_max[3] = 10;
+    hue[0] = 300;
+    hue[1] = 200;
 }
 
 void proceed_pattern(float time)
@@ -648,10 +631,22 @@ void proceed_pattern(float time)
     }
     //printf("STEP %f %i %i %f\n", pos[0], counter[0], counter_max[0], vel[0]);
 
-    // leaf glow counter?
+    // fireworks counter
+    counter[3]++;
+    pos[3] -= .025;
+    if (counter[3] >= counter_max[3])
+    {
+        counter[3] = 0;
+        counter_max[3] = 80 + random(100);
+        pos[3] = 1.;
+
+        hue[0] = random(360);
+        hue[1] = random(360); // hue[0] + (-100 + random(200));
+        ang[0] = random(10) - 5;
+    }
 }
 
-LED shader(float time, vec2 coord, int pixel, int segment, int type)
+LED shader(int pattern, float time, vec2 coord, int pixel, int segment, int type)
 {
     if (debug)
     {
@@ -662,49 +657,91 @@ LED shader(float time, vec2 coord, int pixel, int segment, int type)
         return LED(200, .5, 1);
     }
 
-    if (type > 0) // tie
+    switch (pattern)
     {
-        float hue = 0.;
-        if (type == 3)
-        {
-            hue = WATER_HUE;
-        }
-        else if (type == 1)
-        {
-            hue = 180. + .5 * WATER_HUE;
-        }
-        else if (type == 2)
-        {
-            hue = 0.;
-        }
-        LED led = LED(hue, 0, WATER_BG);
+        case 0:
 
-        for(int p=0; p<3; p++)
-        {
-            float ypos = (float)(pos[p] - coord.y + WATER_Y_OFFSET);
-            if (ypos >= 0 && ypos <= WATER_SCALE)
+            if (type > 0) // tie
             {
-                led.mix(LED(hue, white[p], lumi[p] * max(0., pow(1 - ypos / WATER_SCALE, WATER_GRADIENT_EXPONENT))), 1);
+                float hue = 0.;
+                if (type == 3)
+                {
+                    hue = WATER_HUE;
+                }
+                else if (type == 1)
+                {
+                    hue = 180. + .5 * WATER_HUE;
+                }
+                else if (type == 2)
+                {
+                    hue = 0.;
+                }
+                LED led = LED(hue, 0, WATER_BG);
+
+                for(int p=0; p<3; p++)
+                {
+                    float ypos = (float)(pos[p] - coord.y + WATER_Y_OFFSET);
+                    if (ypos >= 0 && ypos <= WATER_SCALE)
+                    {
+                        led.mix(LED(hue, white[p], lumi[p] * max(0., pow(1 - ypos / WATER_SCALE, WATER_GRADIENT_EXPONENT))), 1);
+                    }
+                }
+
+                return led;
             }
-        }
+            else // leaves
+            {
+                float r = sqrt(pow(coord.x - .5, 2) + pow(coord.y - .5, 2));
+                float phi = 180./PI * atan2(coord.y - .5, coord.x - .5);
 
-        return led;
-    }
-    else // leaves
-    {
-        float r = sqrt(pow(coord.x - .5, 2) + pow(coord.y - .5, 2));
-        float phi = 180./PI * atan2(coord.y - .5, coord.x - .5);
+                float modTime = fmod(time, 200.);
+                float glowEffect = exp(-pow(modTime - 100., 2.)/(150.)) * (.5 + .5 * sin(10. * r + 0.002 * phi - 0.2 * time));
+                float waberEffect = (.5 + .5 * sin(0.07 * time)) * (.5 + .5 * sin(0.09 * time));
+                float spiralHue = 120. - 20. * glowEffect - 10. * waberEffect;
+                float spiralWhite = 0.1 * glowEffect;
+                float spiralLumi = .6 + .3 * glowEffect + .2 * waberEffect;
 
-        float modTime = fmod(time, 200.);
-        float glowEffect = exp(-pow(modTime - 100., 2.)/(150.)) * (.5 + .5 * sin(10. * r + 0.002 * phi - 0.2 * time));
-        float waberEffect = (.5 + .5 * sin(0.07 * time)) * (.5 + .5 * sin(0.09 * time));
-        float spiralHue = 120. - 20. * glowEffect - 10. * waberEffect;
-        float spiralWhite = 0.1 * glowEffect;
-        float spiralLumi = .6 + .3 * glowEffect + .2 * waberEffect;
+                LED led_spiral = LED(spiralHue, spiralWhite, min(spiralLumi, 1.f));
 
-        LED led_spiral = LED(spiralHue, spiralWhite, min(spiralLumi, 1.f));
+                return led_spiral;
+            }
 
-        return led_spiral;
+        case 1:
+
+            float explosionPoint = 0.3;
+            vec2 rocketPos = vec2(0.5 + (pos[3] - 0.5) * sin(180./PI * ang[0]), pos[3]);
+            if (pos[3] >= explosionPoint)
+            {
+                float rocketHue = hue[0] + 30 * exp(-pow(coord.get_distance_to(rocketPos), 2.)/.1);
+                //float rocketWhite = exp(-pow(coord.get_distance_to(rocketPos), 2.)/.01);
+                float rocketLumi = exp(-pow(coord.get_distance_to(rocketPos), 2.)/.02);
+
+                return LED(rocketHue, 0, rocketLumi);
+            }
+            else if (type == 0)
+            {
+                float radiusFromCenter = coord.get_distance_to(vec2(.5, explosionPoint));
+                float ringRadius1 = 0.61 * (explosionPoint - pos[3]);
+                float ringRadius2 = 0.36 * (explosionPoint - pos[3]);
+                float ringLumi1 = exp(-pow(ringRadius1 - radiusFromCenter, 2.)/.003);
+                float ringLumi2 = exp(-pow(ringRadius2 - radiusFromCenter, 2.)/.003);
+                LED ring1 = LED(hue[0], 0, ringLumi1);
+                LED ring2 = LED(hue[1], 0, ringLumi2);
+                ring1.mix(ring2, 1);
+
+                return ring1;
+            }
+            else
+            {
+                return LED();
+            }
+
+
+
+//        default:
+//
+//            return LED(10, 0, .7 + .3 * sin(.25*time));
+
     }
 }
 
